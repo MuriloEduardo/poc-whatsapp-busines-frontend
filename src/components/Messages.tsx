@@ -117,7 +117,7 @@ export default function Messages() {
                 }
             });
         }
-    }, [ws]);
+    }, []);
 
     const sendMessage = async (event: FormEvent) => {
         event.preventDefault();
@@ -129,33 +129,37 @@ export default function Messages() {
             },
             body: JSON.stringify({ message }),
         });
+
+        setMessage('');
     }
 
     return <>
-        {messages && messages.map((message) =>
-            <div key={message._id}>
-                {message.entry && message.entry.map((entry) =>
-                    <div key={entry.id}>
-                        {entry.changes.map((change, index) =>
-                            <div key={index}>
-                                {change.value.messages?.map((message) =>
-                                    <div key={message.id}>
-                                        <p>{message.text.body}</p>
-                                        <UnixTimeStampToDate unixTimeStamp={message.timestamp} />
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                )}
-                {!message.entry && message.messages?.length && message.messages.map((send_message) =>
-                    <div key={message._id}>
-                        <p>{send_message.text?.body}</p>
-                        <UnixTimeStampToDate unixTimeStamp={send_message.timestamps} />
-                    </div>
-                )}
-            </div>
-        )}
+        <div className='flex flex-col'>
+            {messages && messages.map((message) =>
+                <div key={message._id} className='w-full'>
+                    {message.entry && message.entry.map((entry) =>
+                        <div key={entry.id} className='text-left'>
+                            {entry.changes.map((change, index) =>
+                                <div key={index}>
+                                    {change.value.messages?.map((message) =>
+                                        <div key={message.id}>
+                                            <p>{message.text.body}</p>
+                                            <UnixTimeStampToDate unixTimeStamp={message.timestamp} />
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    {!message.entry && message.messages?.length && message.messages.map((send_message) =>
+                        <div key={message._id} className='text-right'>
+                            <p>{send_message.text?.body}</p>
+                            <UnixTimeStampToDate unixTimeStamp={send_message.timestamps} />
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
         <form onSubmit={(e) => sendMessage(e)}>
             <textarea value={message} onChange={(e) => setMessage(e.target.value)} />
             <button type="submit">Send</button>
