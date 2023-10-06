@@ -1,7 +1,7 @@
 'use client'
 
 import { useWS } from './WebSocket';
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { UnixTimeStampToDate } from './UnixTimeStampToDate';
 
 type ValueMessageText = {
@@ -80,6 +80,7 @@ type Message = {
 
 export default function Messages() {
     const ws = useWS();
+    const [message, setMessage] = useState<string>();
     const [messages, setMessages] = useState<Message[]>([]);
 
     useEffect(() => {
@@ -108,22 +109,48 @@ export default function Messages() {
         }
     }, [ws]);
 
-    return messages && messages.map((message) =>
-        <div key={message._id}>
-            {message.entry.map((entry) =>
-                <div key={entry.id}>
-                    {entry.changes.map((change, index) =>
-                        <div key={index}>
-                            {change.value.messages?.map((message) =>
-                                <div key={message.id}>
-                                    <p>{message.text.body}</p>
-                                    <UnixTimeStampToDate unixTimeStamp={message.timestamp} />
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-            )}
-        </div>
-    );
+    const sendMessage = async (event: FormEvent) => {
+        try {
+            event.preventDefault();
+
+            let sendedMessage = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/whatsapp-business/send-message`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message }),
+            });
+
+            sendedMessage = await sendedMessage.json();
+
+            console.log(sendedMessage);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    return <>
+        {messages && messages.map((message) =>
+            <div key={message._id}>
+                {message.entry.map((entry) =>
+                    <div key={entry.id}>
+                        {entry.changes.map((change, index) =>
+                            <div key={index}>
+                                {change.value.messages?.map((message) =>
+                                    <div key={message.id}>
+                                        <p>{message.text.body}</p>
+                                        <UnixTimeStampToDate unixTimeStamp={message.timestamp} />
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        )}
+        <form onSubmit={(e) => sendMessage(e)}>
+            <textarea value={message} onChange={(e) => setMessage(e.target.value)} />
+            <button type="submit">Send</button>
+        </form>
+    </>
 }
