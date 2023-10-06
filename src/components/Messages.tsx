@@ -76,6 +76,7 @@ type Entry = {
 type MessagesSended = {
     type: string;
     text: ValueMessageText;
+    timestamps: string;
 };
 
 type Message = {
@@ -147,11 +148,12 @@ export default function Messages() {
                         )}
                     </div>
                 )}
-                {!message.entry && message.messages?.length && message.messages.map((send_message) => {
-                    return <div key={message._id}>
+                {!message.entry && message.messages?.length && message.messages.map((send_message) =>
+                    <div key={message._id}>
                         <p>{send_message.text?.body}</p>
+                        <UnixTimeStampToDate unixTimeStamp={send_message.timestamps} />
                     </div>
-                })}
+                )}
             </div>
         )}
         <form onSubmit={(e) => sendMessage(e)}>
