@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useMemo, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useMemo, ReactNode } from 'react';
 
 type WSProviderProps = { children: ReactNode; };
 

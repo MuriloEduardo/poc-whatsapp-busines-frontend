@@ -109,7 +109,7 @@ export default function Home() {
   }, [ws]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main>
       {messages && messages.map((message) =>
         <div key={message._id}>
           {message.entry.map((entry) =>
