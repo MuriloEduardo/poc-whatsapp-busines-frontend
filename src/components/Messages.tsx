@@ -162,7 +162,7 @@ export default function Messages() {
         </div>
         <form onSubmit={(e) => sendMessage(e)} className='flex mt-6'>
             <textarea rows={5} value={message} onChange={(e) => setMessage(e.target.value)} className='grow rounded p-4' />
-            <button type="submit" className='p-4'>Send</button>
+            <button type="submit" className='p-4' disabled={!message}>Send</button>
         </form>
     </div>
 }
