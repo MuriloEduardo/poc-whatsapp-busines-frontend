@@ -22,7 +22,8 @@ type Profile = {
 
 type Contact = {
     wa_id: string;
-    profile: Profile;
+    profile?: Profile;
+    input?: string;
 };
 
 type Origin = {
@@ -72,24 +73,24 @@ type Entry = {
     changes: Change[];
 };
 
+type MessagesSended = {
+    type: string;
+    text: ValueMessageText;
+};
+
 type Message = {
     _id: string;
     object: string;
-    entry: Entry[];
-};
-
-type SendMessageError = {
-    code: number;
-    type: string;
-    message: string;
-    fbtrace_id: string;
+    entry?: Entry[];
+    messaging_product?: string;
+    messages?: MessagesSended[];
+    contacts?: Contact[];
 };
 
 export default function Messages() {
     const ws = useWS();
     const [message, setMessage] = useState<string>();
     const [messages, setMessages] = useState<Message[]>([]);
-    const [error, setError] = useState<SendMessageError>();
 
     useEffect(() => {
         if (ws) {
@@ -118,33 +119,21 @@ export default function Messages() {
     }, [ws]);
 
     const sendMessage = async (event: FormEvent) => {
-        try {
-            event.preventDefault();
+        event.preventDefault();
 
-            let sendedMessage: Response | any = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/whatsapp-business/send-message`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ message }),
-            });
-
-            sendedMessage = await sendedMessage.json();
-
-            if (sendedMessage.error) {
-                throw sendedMessage.error;
-            } else {
-                // Create a message like a chat
-            }
-        } catch (error) {
-            setError(error as SendMessageError);
-        }
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/whatsapp-business/send-message`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message }),
+        });
     }
 
     return <>
         {messages && messages.map((message) =>
             <div key={message._id}>
-                {message.entry.map((entry) =>
+                {message.entry && message.entry.map((entry) =>
                     <div key={entry.id}>
                         {entry.changes.map((change, index) =>
                             <div key={index}>
@@ -158,12 +147,16 @@ export default function Messages() {
                         )}
                     </div>
                 )}
+                {!message.entry && message.messages?.length && message.messages.map((send_message) => {
+                    return <div key={message._id}>
+                        <p>{send_message.text?.body}</p>
+                    </div>
+                })}
             </div>
         )}
         <form onSubmit={(e) => sendMessage(e)}>
             <textarea value={message} onChange={(e) => setMessage(e.target.value)} />
             <button type="submit">Send</button>
         </form>
-        {error && <p>{error.message}</p>}
     </>
 }
