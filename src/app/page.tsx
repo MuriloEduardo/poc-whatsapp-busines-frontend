@@ -72,12 +72,8 @@ type Entry = {
   changes: Change[];
 };
 
-type Id = {
-  $oid: string;
-};
-
 type Message = {
-  _id: Id;
+  _id: string;
   object: string;
   entry: Entry[];
 };
@@ -89,13 +85,25 @@ export default function Home() {
   useEffect(() => {
     if (ws) {
       ws.addEventListener('open', () => {
-        ws.send('Olá, servidor WebSocket!');
+        // ws.send('Olá, servidor WebSocket!');
       });
 
       ws.addEventListener('message', (event) => {
         const data = JSON.parse(event.data);
 
-        setMessages(data);
+        if (data instanceof Array) {
+          setMessages(data);
+        } else {
+          setMessages(state => {
+            const itemExists = state.some((item) => item._id === data._id);
+
+            if (!itemExists) {
+              return [...state, data];
+            }
+
+            return state;
+          });
+        }
       });
     }
   }, [ws]);
@@ -103,7 +111,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       {messages && messages.map((message) =>
-        <div key={message._id.$oid}>
+        <div key={message._id}>
           {message.entry.map((entry) =>
             <div key={entry.id}>
               {entry.changes.map((change, index) =>

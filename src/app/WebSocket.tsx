@@ -8,7 +8,7 @@ const WSStateContext = createContext<WebSocket | null>(null);
 
 function WSProvider({ children }: WSProviderProps): JSX.Element {
     const wsInstance = useMemo(() => {
-        const socket = new WebSocket('ws://localhost:5000/ws');
+        const socket = new WebSocket(`ws:${process.env.NEXT_PUBLIC_API_URL}/ws`);
 
         socket.addEventListener('open', () => {
             console.log('Socket is OPEN');
