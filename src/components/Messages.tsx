@@ -133,16 +133,16 @@ export default function Messages() {
         setMessage('');
     }
 
-    return <>
+    return <div className='p-4'>
         <div className='flex flex-col'>
             {messages && messages.map((message) =>
-                <div key={message._id} className='w-full'>
+                <div key={message._id}>
                     {message.entry && message.entry.map((entry) =>
-                        <div key={entry.id} className='text-left'>
+                        <div key={entry.id}>
                             {entry.changes.map((change, index) =>
                                 <div key={index}>
                                     {change.value.messages?.map((message) =>
-                                        <div key={message.id}>
+                                        <div key={message.id} className='text-left'>
                                             <p>{message.text.body}</p>
                                             <UnixTimeStampToDate unixTimeStamp={message.timestamp} />
                                         </div>
@@ -160,9 +160,9 @@ export default function Messages() {
                 </div>
             )}
         </div>
-        <form onSubmit={(e) => sendMessage(e)}>
-            <textarea value={message} onChange={(e) => setMessage(e.target.value)} />
-            <button type="submit">Send</button>
+        <form onSubmit={(e) => sendMessage(e)} className='flex mt-6'>
+            <textarea rows={5} value={message} onChange={(e) => setMessage(e.target.value)} className='grow rounded p-4' />
+            <button type="submit" className='p-4'>Send</button>
         </form>
-    </>
+    </div>
 }
