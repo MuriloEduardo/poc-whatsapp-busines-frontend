@@ -78,10 +78,18 @@ type Message = {
     entry: Entry[];
 };
 
+type SendMessageError = {
+    code: number;
+    type: string;
+    message: string;
+    fbtrace_id: string;
+};
+
 export default function Messages() {
     const ws = useWS();
     const [message, setMessage] = useState<string>();
     const [messages, setMessages] = useState<Message[]>([]);
+    const [error, setError] = useState<SendMessageError>();
 
     useEffect(() => {
         if (ws) {
@@ -113,7 +121,7 @@ export default function Messages() {
         try {
             event.preventDefault();
 
-            let sendedMessage = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/whatsapp-business/send-message`, {
+            let sendedMessage: Response | any = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/whatsapp-business/send-message`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -123,9 +131,13 @@ export default function Messages() {
 
             sendedMessage = await sendedMessage.json();
 
-            console.log(sendedMessage);
+            if (sendedMessage.error) {
+                throw sendedMessage.error;
+            } else {
+                // Create a message like a chat
+            }
         } catch (error) {
-            console.log(error)
+            setError(error as SendMessageError);
         }
     }
 
@@ -152,5 +164,6 @@ export default function Messages() {
             <textarea value={message} onChange={(e) => setMessage(e.target.value)} />
             <button type="submit">Send</button>
         </form>
+        {error && <p>{error.message}</p>}
     </>
 }
