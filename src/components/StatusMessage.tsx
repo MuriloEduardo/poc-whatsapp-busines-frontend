@@ -48,7 +48,7 @@ export default function StatusMessage({ messages, message }: { messages: Message
     const colorStatus = statusMessage.includes('read') ? 'text-blue-500' : '';
 
     return <>
-        <div className={`flex ${colorStatus}`}>
+        <div className={`m-1 flex ${colorStatus}`}>
             {statusMessage.includes('delivered') && <CheckIcon className='w-3 -m-1' />}
             {statusMessage.includes('sent') && <CheckIcon className='w-3 -m-1' />}
         </div>

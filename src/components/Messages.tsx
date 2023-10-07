@@ -142,10 +142,10 @@ export default function Messages() {
         setMessage('');
     }
 
-    return <div className='p-4'>
-        <div className='flex flex-col'>
+    return <div className='flex flex-col max-h-screen'>
+        <div className='flex flex-col overflow-y-auto'>
             {messages && messages.map((message) =>
-                <div key={message._id}>
+                <div key={message._id} className='px-4'>
                     {message.entry && message.entry.map((entry) =>
                         <div key={entry.id}>
                             {entry.changes.map((change, index) =>
