@@ -1,8 +1,10 @@
 'use client'
 
 import { useWS } from './WebSocket';
+import StatusMessage from './StatusMessage';
 import { FormEvent, useEffect, useState } from 'react';
 import { UnixTimeStampToDate } from './UnixTimeStampToDate';
+import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
 
 type ValueMessageText = {
     body: string;
@@ -74,12 +76,14 @@ type Entry = {
 };
 
 type MessagesSended = {
+    id: string;
     type: string;
     text: ValueMessageText;
     timestamps: string;
+    data: ValueMessage;
 };
 
-type Message = {
+export type Message = {
     _id: string;
     object: string;
     entry?: Entry[];
@@ -117,7 +121,7 @@ export default function Messages() {
                 }
             });
         }
-    }, []);
+    }, [ws]);
 
     const sendMessage = async (event: FormEvent) => {
         event.preventDefault();
@@ -153,16 +157,21 @@ export default function Messages() {
                     )}
                     {!message.entry && message.messages?.length && message.messages.map((send_message) =>
                         <div key={message._id} className='text-right'>
-                            <p>{send_message.text?.body}</p>
-                            <UnixTimeStampToDate unixTimeStamp={send_message.timestamps} />
+                            <p>{send_message.data.text.body}</p>
+                            <div className="flex gap-2 justify-end">
+                                <UnixTimeStampToDate unixTimeStamp={send_message.timestamps} />
+                                <StatusMessage messages={messages} message={message} />
+                            </div>
                         </div>
                     )}
                 </div>
             )}
         </div>
         <form onSubmit={(e) => sendMessage(e)} className='flex mt-6'>
-            <textarea rows={5} value={message} onChange={(e) => setMessage(e.target.value)} className='grow rounded p-4' />
-            <button type="submit" className='p-4' disabled={!message}>Send</button>
+            <textarea value={message} onChange={(e) => setMessage(e.target.value)} className='grow rounded p-4' />
+            <button type="submit" className='p-4' disabled={!message}>
+                <PaperAirplaneIcon className='w-6' />
+            </button>
         </form>
     </div>
 }

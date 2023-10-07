@@ -5,5 +5,5 @@ export function UnixTimeStampToDate({ unixTimeStamp }: { unixTimeStamp: string |
     const date = new Date(unix_milliseconds)
     const formattedDate = date.toLocaleString();
 
-    return <small className='text-xs'>{formattedDate}</small>;
+    return <small className='text-xs opacity-50'>{formattedDate}</small>;
 }
