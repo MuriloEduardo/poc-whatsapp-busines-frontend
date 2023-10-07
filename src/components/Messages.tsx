@@ -1,5 +1,6 @@
 'use client'
 
+import OpenIa from './OpenIa';
 import { useWS } from './WebSocket';
 import StatusMessage from './StatusMessage';
 import { FormEvent, useEffect, useState } from 'react';
@@ -106,18 +107,22 @@ export default function Messages() {
             ws.addEventListener('message', (event) => {
                 const data = JSON.parse(event.data);
 
-                if (data instanceof Array) {
-                    setMessages(data);
-                } else {
-                    setMessages(state => {
-                        const itemExists = state.some((item) => item._id === data._id);
+                if (data.type === 'whatsapp') {
+                    const content = data.data;
 
-                        if (!itemExists) {
-                            return [...state, data];
-                        }
+                    if (content instanceof Array) {
+                        setMessages(content);
+                    } else {
+                        setMessages(state => {
+                            const itemExists = state.some((item) => item._id === content._id);
 
-                        return state;
-                    });
+                            if (!itemExists) {
+                                return [...state, content];
+                            }
+
+                            return state;
+                        });
+                    }
                 }
             });
         }
@@ -167,6 +172,7 @@ export default function Messages() {
                 </div>
             )}
         </div>
+        <OpenIa />
         <form onSubmit={(e) => sendMessage(e)} className='flex mt-6'>
             <textarea value={message} onChange={(e) => setMessage(e.target.value)} className='grow rounded p-4' />
             <button type="submit" className='p-4' disabled={!message}>

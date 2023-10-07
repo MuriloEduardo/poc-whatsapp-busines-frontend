@@ -6,9 +6,9 @@ type WSProviderProps = { children: ReactNode; };
 
 const WSStateContext = createContext<WebSocket | null>(null);
 
-function WSProvider({ children }: WSProviderProps): JSX.Element {
+export function WSProvider({ children }: WSProviderProps): JSX.Element {
     const wsInstance = useMemo(() => {
-        const socket = new WebSocket(`${process.env.NEXT_PUBLIC_WEB_SOCKET_URL}/whatsapp-business/ws`);
+        const socket = new WebSocket(`${process.env.NEXT_PUBLIC_WEB_SOCKET_URL}/ws`);
 
         socket.addEventListener('open', () => {
             console.log('Socket is OPEN');
@@ -28,7 +28,7 @@ function WSProvider({ children }: WSProviderProps): JSX.Element {
     return <WSStateContext.Provider value={wsInstance}>{children}</WSStateContext.Provider>;
 }
 
-function useWS(): WebSocket {
+export function useWS(): WebSocket {
     const context = useContext(WSStateContext);
 
     if (!context) {
@@ -37,5 +37,3 @@ function useWS(): WebSocket {
 
     return context;
 }
-
-export { WSProvider, useWS };
