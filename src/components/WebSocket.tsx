@@ -8,7 +8,7 @@ const WSStateContext = createContext<WebSocket | null>(null);
 
 function WSProvider({ children }: WSProviderProps): JSX.Element {
     const wsInstance = useMemo(() => {
-        const socket = new WebSocket(`${process.env.NEXT_PUBLIC_WEB_SOCKET_URL}/ws`);
+        const socket = new WebSocket(`${process.env.NEXT_PUBLIC_WEB_SOCKET_URL}/whatsapp-business/ws`);
 
         socket.addEventListener('open', () => {
             console.log('Socket is OPEN');
