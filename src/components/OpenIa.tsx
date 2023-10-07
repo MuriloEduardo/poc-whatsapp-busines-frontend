@@ -18,8 +18,6 @@ export default function OpenIa() {
                     const content = data.data;
 
                     setContent(content);
-
-                    console.log(content)
                 }
             });
         }
