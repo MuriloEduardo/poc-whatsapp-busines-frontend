@@ -100,10 +100,6 @@ export default function Messages() {
 
     useEffect(() => {
         if (ws) {
-            ws.addEventListener('open', () => {
-                // ws.send('Olá, servidor WebSocket!');
-            });
-
             ws.addEventListener('message', (event) => {
                 const data = JSON.parse(event.data);
 
